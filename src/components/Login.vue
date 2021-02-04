@@ -2,7 +2,6 @@
   TODOs:
   * Add validation & animation for email & password
   * Add route transition
-  * Disable login button when request is in flight
 -->
 
 <template>
@@ -27,13 +26,13 @@
       Incorrect email or password
     </div>
     <div class="action-container">
-      <button @click="submit">Login</button>
+      <button v-bind:disabled="!isRequestInFlight" @click.prevent="submit">Login</button>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, Ref, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import store from '../store';
@@ -43,25 +42,32 @@ import { dispatchLogIn } from '../store/main/actions';
 export default defineComponent({
   setup() {
     const router = useRouter();
-    const email = ref('');
-    const password = ref('');
+    const email: Ref<string> = ref('');
+    const password: Ref<string> = ref('');
+    const isRequestInFlight: Ref<boolean> = ref(true);
 
     const loginError = () => {
       return readLoginError(store);
     }
 
     const submit = async () => {
+      isRequestInFlight.value = true;
       await dispatchLogIn(store, {username: email.value, password: password.value});
 
       const isLoggedIn = readIsLoggedIn(store);
       if (isLoggedIn) {
+        isRequestInFlight.value = false;
         router.push('/dashboard');
+      } else {
+        // TODO: Show error message
+        isRequestInFlight.value = false;
       }
     }
 
     return {
       email,
       password,
+      isRequestInFlight,
       loginError,
       submit,
     }

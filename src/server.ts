@@ -1,4 +1,7 @@
-import { Server, Model, Response, Factory } from 'miragejs'
+import { Server, Model, Response, Factory } from 'miragejs';
+
+import { IUserProfile } from './interfaces/core';
+import { ITaskData } from './interfaces/tasks';
 
 // 4 second delay
 const timing = 4000;
@@ -62,122 +65,35 @@ export function makeServer({ environment = "development" } = {}) {
 
       // GET /tasks/
       this.get("/tasks", (schema, request) => {
-        const allTasks: Task[] = [];
-        tasks.forEach((v, k) => {
-          allTasks.push({
-            ID: v,
-            Text: k,
-          });
-        });
-        return allTasks;
+        return schema.all('task');
       },
       { timing });
 
       // POST /tasks/
       this.post("/tasks", (schema, request) => {
-        console.log('request', request);
         let attrs = JSON.parse(request.requestBody);
-        console.log('attrs', attrs);
-        // const insertResult = schema.db.tasks.insert(attrs);
         const insertResult = schema.create('task', attrs);
-        console.log('insertResult', insertResult);
         return insertResult;
-
-        // tasks.set(newId, attrs.text);
-        // return new Response(
-        //   201,
-        //   {},
-        //   { TaskID: newId },
-        // );
       },
       { timing });
 
       // GET /tasks/:id
       this.get("/tasks/:id", (schema, request) => {
         let taskId = request.params.id
+
+        const searchResult = schema.findBy('task', {id: taskId});
         
-        if (!tasks.has(taskId)) {
-          return new Response(
-            404,
-            {},
-            { error: 'No Task found with that ID' },
-          );
+        if (searchResult) {
+          return searchResult;
         } else {
-          const task = tasks.get(taskId);
-          return new Response(
-            200,
-            {},
-            { Text: task },
-          );
+          return new Response(404, {}, {error: 'Not found'});
         }
       },
       { timing });
 
-      // PUT /tasks/:id
-      this.put("/tasks/:id", (schema, request) => {
-        let taskId = request.params.id
+    }, // end routes
 
-        let attrs = JSON.parse(request.requestBody)
-
-        if (taskId != attrs.TaskID) {
-          return new Response(
-            400,
-            {},
-            { error: 'IDs do not match' },
-          );
-        }
-
-        const newId = randomUuid();
-
-        tasks.set(newId, attrs.text);
-
-        return new Response(
-          204,
-        );
-      },
-      { timing });
-
-      // DELETE /tasks/:id
-      this.delete("/tasks/:id", (schema, request) => {
-        let taskId = request.params.id
-
-        if (!tasks.has(taskId)) {
-          return new Response(
-            404,
-            {},
-            { error: 'Task with ID not found', }
-          )
-        } else {
-          tasks.delete(taskId);
-          return new Response(
-            204,
-          );
-        }
-      },
-      { timing });
-    },
-  });
+  }); // end server constructor
 
   return server;
 }
-
-/*
-  UUID helper functions
-*/
-
-import uuid, { v4 as uuidv4, v4 } from 'uuid';
-import { IUserProfile } from './interfaces/core';
-import { ITaskData } from './interfaces/tasks';
-
-const randomUuid = () => {
-  return uuidv4();
-}
-
-/*
-  REST API functions
-*/
-interface Task {
-  ID: string;
-  Text: string;
-}
-const tasks = new Map();

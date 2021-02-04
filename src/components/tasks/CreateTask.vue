@@ -19,9 +19,9 @@
 import { AxiosResponse } from 'axios';
 import { defineComponent, ref } from 'vue';
 
-import store from '../store';
-import { readToken } from '../store/main/getters';
-import tasks from '../api/tasks';
+import store from '../../store';
+import { readToken } from '../../store/main/getters';
+import tasks from '../../api/tasks';
 import { ITaskData } from '@/interfaces/tasks';
 
 export default defineComponent({
@@ -38,8 +38,11 @@ export default defineComponent({
       console.log('save task response', response);
 
       // if create is successful, clear state
+      // TODO: show confirmation message
       if (response.status < 300 && response.status >= 200) {
         taskDescription.value = '';
+      } else {
+        // TODO: show error message
       }
     }
 

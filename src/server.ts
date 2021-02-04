@@ -7,7 +7,7 @@ export function makeServer({ environment = "development" } = {}) {
   let server = new Server({
     environment,
     models: {
-      task: Model,
+      task: Model.extend<Partial<ITaskData>>({}),
       token: Model,
       profile: Model.extend<Partial<IUserProfile>>({}),
     },
@@ -33,15 +33,10 @@ export function makeServer({ environment = "development" } = {}) {
         // Create a dummy token to return--all logins are okay with local testing
         // unless using "fail@test.com" email
 
-        const params = request.params;
-        const queryParams = request.queryParams;
-
         const data = {
           access_token: 'tokenString',
           status: 200,
         };
-
-        console.log('returning', data);
 
         return data;
       },
@@ -80,14 +75,20 @@ export function makeServer({ environment = "development" } = {}) {
 
       // POST /tasks/
       this.post("/tasks", (schema, request) => {
-        let attrs = JSON.parse(request.requestBody).task
-        const newId = randomUuid();
-        tasks.set(newId, attrs.text);
-        return new Response(
-          201,
-          {},
-          { TaskID: newId },
-        );
+        console.log('request', request);
+        let attrs = JSON.parse(request.requestBody);
+        console.log('attrs', attrs);
+        // const insertResult = schema.db.tasks.insert(attrs);
+        const insertResult = schema.create('task', attrs);
+        console.log('insertResult', insertResult);
+        return insertResult;
+
+        // tasks.set(newId, attrs.text);
+        // return new Response(
+        //   201,
+        //   {},
+        //   { TaskID: newId },
+        // );
       },
       { timing });
 
@@ -165,7 +166,8 @@ export function makeServer({ environment = "development" } = {}) {
 */
 
 import uuid, { v4 as uuidv4, v4 } from 'uuid';
-import { IUserProfile } from './interfaces';
+import { IUserProfile } from './interfaces/core';
+import { ITaskData } from './interfaces/tasks';
 
 const randomUuid = () => {
   return uuidv4();

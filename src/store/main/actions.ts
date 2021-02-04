@@ -4,7 +4,7 @@ import { AxiosError } from 'axios';
 
 import router from '../../router';
 
-import { api } from '../../api';
+import core from '../../api/core';
 import { getLocalToken, removeLocalToken, saveLocalToken } from '../../utils';
 import { State } from '../state';
 import { AppNotification, MainState } from './state';
@@ -22,11 +22,9 @@ type MainContext = ActionContext<MainState, State>;
 export const actions = {
   async actionLogIn(context: MainContext, payload: { username: string; password: string }) {
     try {
-      const response = await api.logInGetToken(payload.username, payload.password);
+      const response = await core.logInGetToken(payload.username, payload.password);
       const token = response.data.access_token;
-      console.log('token', token);
       if (token) {
-        console.log('has token');
         saveLocalToken(token);
         commitSetToken(context, token);
         commitSetLoggedIn(context, true);
@@ -35,20 +33,16 @@ export const actions = {
         await dispatchRouteLoggedIn(context);
         commitAddNotification(context, { content: 'Logged in', color: 'success' });
       } else {
-        console.log('no token');
         await dispatchLogOut(context);
       }
     } catch (err) {
-      console.log('error', err);
       commitSetLogInError(context, true);
       await dispatchLogOut(context);
     }
   },
   async actionGetUserProfile(context: MainContext) {
-    console.log('getting user profile');
     try {
-      const response = await api.getMe(context.state.token);
-      console.log('user profile response', response);
+      const response = await core.getMe(context.state.token);
       if (response.data) {
         commitSetUserProfile(context, response.data);
       }
@@ -57,33 +51,25 @@ export const actions = {
     }
   },
   async actionCheckLoggedIn(context: MainContext) {
-    console.log('context', context);
     if (!context.state.isLoggedIn) {
       let token = context.state.token;
-      console.log('token', token);
       if (!token) {
-        console.log('no token exists')
         const localToken = getLocalToken();
-        console.log('localToken', localToken);
         if (localToken) {
-          console.log('localToken exists', localToken);
           commitSetToken(context, localToken);
           token = localToken;
         } else {
-          console.log('localToken DNE');
         }
       }
       if (token) {
-        console.log('token exists')
         try {
-          const response = await api.getMe(token);
+          const response = await core.getMe(token);
           commitSetLoggedIn(context, true);
           commitSetUserProfile(context, response.data);
         } catch (error) {
           await dispatchRemoveLogIn(context);
         }
       } else {
-        console.log('token does not exist');
         await dispatchRemoveLogIn(context);
       }
     }
@@ -93,7 +79,6 @@ export const actions = {
     await dispatchRouteLogOut(context);
   },
   actionRouteLogOut(context: MainContext) {
-    console.log('actionRouteLogOut');
     if (router.currentRoute.value.path !== '/login') {
       router.push('/');
     }
@@ -104,7 +89,6 @@ export const actions = {
     commitSetLoggedIn(context, false);
   },
   async actionCheckApiError(context: MainContext, payload: AxiosError) {
-    console.log('actionCheckApiError', payload);
     if (payload.response!.status === 401) {
       await dispatchLogOut(context);
     }

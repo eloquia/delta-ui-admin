@@ -1,3 +1,10 @@
+<!--
+  TODOs:
+  * Add validation & animation for email & password
+  * Add route transition
+  * Disable login button when request is in flight
+-->
+
 <template>
   <div>
     <h1>Delta</h1>
@@ -47,7 +54,6 @@ export default defineComponent({
       await dispatchLogIn(store, {username: email.value, password: password.value});
 
       const isLoggedIn = readIsLoggedIn(store);
-      console.log('isLoggedIn', isLoggedIn);
       if (isLoggedIn) {
         router.push('/dashboard');
       }

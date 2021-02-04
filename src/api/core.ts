@@ -1,16 +1,10 @@
 import axios from 'axios';
-import { apiUrl } from './env';
-import { IUserProfile, IUserProfileUpdate } from './interfaces';
 
-function authHeaders(token: string) {
-  return {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-}
+import { apiUrl } from '../env';
+import { authHeaders } from './helpers';
+import { IUserProfile, IUserProfileUpdate } from '../interfaces/core';
 
-export const api = {
+export default {
   async logInGetToken(username: string, password: string) {
     const params = new URLSearchParams();
     params.append('username', username);
@@ -30,4 +24,4 @@ export const api = {
   async updateUser(token: string, userId: number, data: IUserProfileUpdate) {
     return axios.put(`${apiUrl}/users/${userId}`, data, authHeaders(token));
   },
-};
+}

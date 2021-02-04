@@ -15,6 +15,7 @@ if (envMode == 'development') {
   makeServer({ environment: envMode });
 }
 
+console.log('Starting front-end app');
 createApp(App)
   .use(store)
   .use(router)

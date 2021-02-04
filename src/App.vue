@@ -12,6 +12,10 @@ export default defineComponent({
   components: {
     Admin,
   },
+  /*
+    Setup is run before component is created and after props are resolved
+  */
+  setup () {}
 });
 </script>
 

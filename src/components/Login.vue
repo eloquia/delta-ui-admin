@@ -27,13 +27,15 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
-import store from '../store';
+import { useRouter } from 'vue-router';
 
-import { readLoginError } from '../store/main/getters';
+import store from '../store';
+import { readIsLoggedIn, readLoginError } from '../store/main/getters';
 import { dispatchLogIn } from '../store/main/actions';
 
 export default defineComponent({
   setup() {
+    const router = useRouter();
     const email = ref('');
     const password = ref('');
 
@@ -41,8 +43,14 @@ export default defineComponent({
       return readLoginError(store);
     }
 
-    const submit = () => {
-      dispatchLogIn(store, {username: email.value, password: password.value});
+    const submit = async () => {
+      await dispatchLogIn(store, {username: email.value, password: password.value});
+
+      const isLoggedIn = readIsLoggedIn(store);
+      console.log('isLoggedIn', isLoggedIn);
+      if (isLoggedIn) {
+        router.push('/dashboard');
+      }
     }
 
     return {

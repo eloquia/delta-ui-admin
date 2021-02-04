@@ -24,7 +24,9 @@ export const actions = {
     try {
       const response = await api.logInGetToken(payload.username, payload.password);
       const token = response.data.access_token;
+      console.log('token', token);
       if (token) {
+        console.log('has token');
         saveLocalToken(token);
         commitSetToken(context, token);
         commitSetLoggedIn(context, true);
@@ -33,16 +35,20 @@ export const actions = {
         await dispatchRouteLoggedIn(context);
         commitAddNotification(context, { content: 'Logged in', color: 'success' });
       } else {
+        console.log('no token');
         await dispatchLogOut(context);
       }
     } catch (err) {
+      console.log('error', err);
       commitSetLogInError(context, true);
       await dispatchLogOut(context);
     }
   },
   async actionGetUserProfile(context: MainContext) {
+    console.log('getting user profile');
     try {
       const response = await api.getMe(context.state.token);
+      console.log('user profile response', response);
       if (response.data) {
         commitSetUserProfile(context, response.data);
       }
@@ -51,16 +57,24 @@ export const actions = {
     }
   },
   async actionCheckLoggedIn(context: MainContext) {
+    console.log('context', context);
     if (!context.state.isLoggedIn) {
       let token = context.state.token;
+      console.log('token', token);
       if (!token) {
+        console.log('no token exists')
         const localToken = getLocalToken();
+        console.log('localToken', localToken);
         if (localToken) {
+          console.log('localToken exists', localToken);
           commitSetToken(context, localToken);
           token = localToken;
+        } else {
+          console.log('localToken DNE');
         }
       }
       if (token) {
+        console.log('token exists')
         try {
           const response = await api.getMe(token);
           commitSetLoggedIn(context, true);
@@ -69,6 +83,7 @@ export const actions = {
           await dispatchRemoveLogIn(context);
         }
       } else {
+        console.log('token does not exist');
         await dispatchRemoveLogIn(context);
       }
     }
@@ -78,8 +93,9 @@ export const actions = {
     await dispatchRouteLogOut(context);
   },
   actionRouteLogOut(context: MainContext) {
+    console.log('actionRouteLogOut');
     if (router.currentRoute.value.path !== '/login') {
-      router.push('/login');
+      router.push('/');
     }
   },
   async actionRemoveLogIn(context: MainContext) {
@@ -88,13 +104,14 @@ export const actions = {
     commitSetLoggedIn(context, false);
   },
   async actionCheckApiError(context: MainContext, payload: AxiosError) {
+    console.log('actionCheckApiError', payload);
     if (payload.response!.status === 401) {
       await dispatchLogOut(context);
     }
   },
   actionRouteLoggedIn(context: MainContext) {
     if (router.currentRoute.value.path === '/login' || router.currentRoute.value.path === '/') {
-      router.push('/main');
+      router.push('/dashboard');
     }
   },
 };

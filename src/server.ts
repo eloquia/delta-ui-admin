@@ -1,4 +1,4 @@
-import { Server, Model, Response } from 'miragejs'
+import { Server, Model, Response, Factory } from 'miragejs'
 
 // 4 second delay
 const timing = 4000;
@@ -9,6 +9,18 @@ export function makeServer({ environment = "development" } = {}) {
     models: {
       task: Model,
       token: Model,
+      profile: Model.extend<Partial<IUserProfile>>({}),
+    },
+    factories: {
+      profile: Factory.extend<Partial<IUserProfile>>({
+        full_name: 'John Doe',
+        email: 'test@company.com',
+        is_active: true,
+        is_superuser: true,
+      })
+    },
+    seeds(server) {
+      server.create('profile');
     },
     routes() {
       this.namespace = "";
@@ -26,11 +38,26 @@ export function makeServer({ environment = "development" } = {}) {
 
         const data = {
           access_token: 'tokenString',
+          status: 200,
         };
 
         console.log('returning', data);
 
         return data;
+      },
+      { timing });
+
+      /*
+        Profiles endpoint
+      */
+      this.get('/users/me', (schema, request) => {
+        const profile = schema.findBy('profile', { id: '1', });
+        console.log('profile', profile);
+        return new Response(
+          200,
+          {},
+          {profile},
+        );
       },
       { timing });
 
@@ -138,6 +165,7 @@ export function makeServer({ environment = "development" } = {}) {
 */
 
 import uuid, { v4 as uuidv4, v4 } from 'uuid';
+import { IUserProfile } from './interfaces';
 
 const randomUuid = () => {
   return uuidv4();

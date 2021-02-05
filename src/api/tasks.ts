@@ -8,4 +8,7 @@ export default {
   async createTask(taskData: ITaskData, token: string) {
     return axios.post(`${apiUrl}/tasks/`, taskData, authHeaders(token));
   },
+  async getTasks(token: string) {
+    return axios.get(`${apiUrl}/tasks/`, authHeaders(token));
+  },
 }

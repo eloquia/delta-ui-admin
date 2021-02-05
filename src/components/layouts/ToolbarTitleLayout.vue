@@ -10,7 +10,7 @@ import { defineComponent } from 'vue';
 import NavControls from '../common/NavControls.vue';
 
 export default defineComponent({
-  name: 'ToolbarLayout',
+  name: 'ToolbarTitleLayout',
   components: { NavControls },
   props: {
     title: {

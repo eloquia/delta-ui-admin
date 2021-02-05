@@ -5,9 +5,7 @@
 -->
 
 <template>
-  <div class="create-task flex flex-col">
-    <h1>Add Completed Task</h1>
-
+  <div class="create-task">
     <label>Description</label>
     <textarea v-model="taskDescription" placeholder="Today I did..."></textarea>
 
@@ -35,7 +33,6 @@ export default defineComponent({
         description: taskDescription.value,
       };
       const response: AxiosResponse<number> = await tasks.createTask(taskData, token);
-      console.log('save task response', response);
 
       // if create is successful, clear state
       // TODO: show confirmation message
@@ -43,6 +40,7 @@ export default defineComponent({
         taskDescription.value = '';
       } else {
         // TODO: show error message
+        console.warn('error', response);
       }
     }
 

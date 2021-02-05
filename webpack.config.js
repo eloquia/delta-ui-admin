@@ -13,11 +13,11 @@ module.exports = {
               implementation: require('sass'),
               sassOptions: {
                 indentedSyntax: true // optional
-              },
-            },
-          },
-        ],
-      },
-    ],
+              }
+            }
+          }
+        ]
+      }
+    ]
   }
 }

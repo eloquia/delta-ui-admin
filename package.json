@@ -12,7 +12,7 @@
     "build": "vuedx-typecheck . && vite build",
     "serve": "vite preview",
     "lint": "./node_modules/eslint/bin/eslint.js .",
-    "lint:fix": "./node_modules/eslint/bin/eslint.js --fix .",
+    "lint:fix": "./node_modules/eslint/bin/eslint.js --fix ."
   },
   "dependencies": {
     "@tailwindcss/forms": "^0.2.1",

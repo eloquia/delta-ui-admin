@@ -13,3 +13,12 @@ export interface IUserProfileUpdate {
   is_active?: boolean;
   is_superuser?: boolean;
 }
+
+/*
+  HTTP requests and responses
+*/
+
+export interface ITokenResponse {
+  access_token: string;
+  status: number;
+}

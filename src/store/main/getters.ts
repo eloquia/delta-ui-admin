@@ -3,10 +3,10 @@ import { State } from '../state';
 import { MainState } from './state';
 
 export const getters = {
-  isLoggedIn: (state: MainState) => state.isLoggedIn,
-  loginError: (state: MainState) => state.logInError,
-  token: (state: MainState) => state.token,
-}
+	isLoggedIn: (state: MainState): boolean | null => state.isLoggedIn,
+	loginError: (state: MainState): boolean => state.logInError,
+	token: (state: MainState): string => state.token,
+};
 
 const {read} = getStoreAccessors<MainState, State>('');
 

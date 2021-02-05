@@ -7,11 +7,11 @@ const env = import.meta.env.MODE;
 let envApiUrl = '';
 
 if (env === 'production') {
-  envApiUrl = `https://${import.meta.env.VITE_DOMAIN_PROD}`;
+	envApiUrl = `https://${import.meta.env.VITE_DOMAIN_PROD}`;
 } else if (env === 'staging') {
-  envApiUrl = `https://${import.meta.env.VITE_DOMAIN_STAG}`;
+	envApiUrl = `https://${import.meta.env.VITE_DOMAIN_STAG}`;
 } else {
-  envApiUrl = `http://${import.meta.env.VITE_DOMAIN_DEV}`;
+	envApiUrl = `http://${import.meta.env.VITE_DOMAIN_DEV}`;
 }
 
 export const apiUrl = envApiUrl;
